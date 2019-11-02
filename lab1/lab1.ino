@@ -22,6 +22,7 @@ void setup()
 
 void loop() 
 {
+    set_rgb_led(0, 255, 0);
     if (start.wasPressed())
     {   
         time_pressed = millis();
@@ -29,14 +30,14 @@ void loop()
         {
             if (millis() - last_time < 30000)
             {
-                set_color(255, 0, 0);
+                set_rgb_led(255, 0, 0);
                 if ((millis() - last_time) % 5 == 0 )
                 {
-                  set_color(255, 255, 255);
+                  set_rgb_led(255, 255, 255);
     
                 }
             }else {
-                set_color(0, 0, 255);
+                set_rgb_led(0, 0, 255);
             }
         };
         return;
