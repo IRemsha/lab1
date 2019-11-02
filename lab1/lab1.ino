@@ -6,16 +6,11 @@
 #define G_OUT 7 
 #define B_OUT 8
 
-#define PIN_BUZZER 4
-#define PIN_BUTTON_OFF 5
+#define PIN_BUTTON 4
 
 unsigned long last_time;
 
-Button redInc  = Button(PIN_BUZZER);
-Button redDec = Button(PIN_BUTTON_OFF);
-
-
-int RGBSet[] = { 0, 0, 0 };
+Button start  = Button(PIN_BUTTON);
 
 
 void setup()
@@ -27,58 +22,30 @@ void setup()
 
 void loop() 
 {
-    set_color("green");
-    if (redInc.wasPressed())
+    if (start.wasPressed())
     {   
         time_pressed = millis();
-        
+         while (1)
+        {
+            if (millis() - last_time < 30000)
+            {
+                set_color(255, 0, 0);
+                if ((millis() - last_time) % 5 == 0 )
+                {
+                  set_color(255, 255, 255);
+    
+                }
+            }else {
+                set_color(0, 0, 255);
+            }
+        };
         return;
     }
 } 
 
-
-void lighthouse()
+void set_rgb_led(int r, int g, int b)
 {
-    while (1)
-    {
-        if (millis() - last_time < 30000)
-        {
-            set_color("red");
-            if ((millis() - last_time) % 5 == 0 )
-            {
-              set_color("white");
-
-            }
-        }else {
-            set_color("blue");
-        }
-    };
-}
-
-void set_color(String color){
-  for (int i = 0; i < 3; ++i){
-    RGBSet[i] = 0;
-  }
-
-  if(color == "red"){
-    RGBSet[0] = 251;
-    
-   } else if (color == "blue"){
-    RGBSet[2] = 251;
-   } else if (color == "green"){
-    RGBSet[1] = 251;
-   } else {
-        for (int i = 0; i < 3; ++i){
-            RGBSet[i] = 251;
-        }
-   }
-
-}
-
-
-void set_rgb_led()
-{
-      analogWrite(R_OUT, RGBSet[0]);
-      analogWrite(G_OUT, RGBSet[1]);
-      analogWrite(B_OUT, RGBSet[2]);
+      analogWrite(R_OUT, 255 - r);
+      analogWrite(G_OUT, 255 - g);
+      analogWrite(B_OUT, 255 - b);
 }
