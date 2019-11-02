@@ -25,7 +25,7 @@ void loop()
     set_rgb_led(0, 255, 0);
     if (start.wasPressed())
     {   
-        time_pressed = millis();
+        last_time = millis();
          while (1)
         {
             if (millis() - last_time < 30000)
