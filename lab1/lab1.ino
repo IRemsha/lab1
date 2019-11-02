@@ -1,36 +1,25 @@
 #include <Arduino.h>
-#include <MD_TCS230.h>
+#include "button.h"
 
-#define  S0_OUT  2
-#define  S1_OUT  3
-#define  S2_OUT  4
-#define  S3_OUT  5
 
 #define R_OUT 6
-#define G_OUT 7
+#define G_OUT 7 
 #define B_OUT 8
 
-MD_TCS230 colorSensor(S2_OUT, S3_OUT, S0_OUT, S1_OUT);
+#define PIN_BUZZER 4
+#define PIN_BUTTON_OFF 5
+
+unsigned long last_time;
+
+Button redInc  = Button(PIN_BUZZER);
+Button redDec = Button(PIN_BUTTON_OFF);
+
+
+int RGBSet[] = { 0, 0, 0 };
+
 
 void setup()
 {
-    Serial.begin(115200);
-    Serial.println("Started!");
-
-    sensorData whiteCalibration;
-    whiteCalibration.value[TCS230_RGB_R] = 0;
-    whiteCalibration.value[TCS230_RGB_G] = 0;
-    whiteCalibration.value[TCS230_RGB_B] = 0;
-
-    sensorData blackCalibration;
-    blackCalibration.value[TCS230_RGB_R] = 0;
-    blackCalibration.value[TCS230_RGB_G] = 0;
-    blackCalibration.value[TCS230_RGB_B] = 0;
-
-    colorSensor.begin();
-    colorSensor.setDarkCal(&blackCalibration);
-    colorSensor.setWhiteCal(&whiteCalibration);
-
     pinMode(R_OUT, OUTPUT);
     pinMode(G_OUT, OUTPUT);
     pinMode(B_OUT, OUTPUT);
@@ -38,29 +27,58 @@ void setup()
 
 void loop() 
 {
-    colorData rgb;
-    colorSensor.read();
+    set_color("green");
+    if (redInc.wasPressed())
+    {   
+        time_pressed = millis();
+        
+        return;
+    }
+} 
 
-    while (!colorSensor.available());
 
-    colorSensor.getRGB(&rgb);
-    print_rgb(rgb);
-    set_rgb_led(rgb);
+void lighthouse()
+{
+    while (1)
+    {
+        if (millis() - last_time < 30000)
+        {
+            set_color("red");
+            if ((millis() - last_time) % 5 == 0 )
+            {
+              set_color("white");
+
+            }
+        }else {
+            set_color("blue");
+        }
+    };
 }
 
-void print_rgb(colorData rgb)
-{
-  Serial.print(rgb.value[TCS230_RGB_R]);
-  Serial.print(" ");
-  Serial.print(rgb.value[TCS230_RGB_G]);
-  Serial.print(" ");
-  Serial.print(rgb.value[TCS230_RGB_B]);
-  Serial.println();
+void set_color(String color){
+  for (int i = 0; i < 3; ++i){
+    RGBSet[i] = 0;
+  }
+
+  if(color == "red"){
+    RGBSet[0] = 251;
+    
+   } else if (color == "blue"){
+    RGBSet[2] = 251;
+   } else if (color == "green"){
+    RGBSet[1] = 251;
+   } else {
+        for (int i = 0; i < 3; ++i){
+            RGBSet[i] = 251;
+        }
+   }
+
 }
 
-void set_rgb_led(colorData rgb)
+
+void set_rgb_led()
 {
-    analogWrite(R_OUT, 255 - rgb.value[TCS230_RGB_R]);
-    analogWrite(G_OUT, 255 - rgb.value[TCS230_RGB_G]);
-    analogWrite(B_OUT, 255 - rgb.value[TCS230_RGB_B]);
+      analogWrite(R_OUT, RGBSet[0]);
+      analogWrite(G_OUT, RGBSet[1]);
+      analogWrite(B_OUT, RGBSet[2]);
 }
