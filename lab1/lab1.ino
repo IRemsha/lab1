@@ -28,13 +28,14 @@ void loop()
         last_time = millis();
          while (1)
         {
-            if (millis() - last_time < 30000)
+        	unsigned long interval = millis() - last_time;
+            if (interval < 30000)
             {
                 set_rgb_led(255, 0, 0);
-                if ((millis() - last_time) % 5 == 0 )
+                if (interval % 5000 == 0)
                 {
                   set_rgb_led(255, 255, 255);
-    
+                  delay(1000);  
                 }
             }else {
                 set_rgb_led(0, 0, 255);
