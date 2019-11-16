@@ -1,28 +1,60 @@
-#include "pitches.h"
+#include <Arduino.h>
 #include "button.h"
-#include "buzzer.h"
-
-#define PIN_BUZZER 6
-#define PIN_BUTTON_OFF 5
-
-Button buttonOff(PIN_BUTTON_OFF);
-Buzzer buzzer(PIN_BUZZER);
 
 
-int notes[] = {NOTE_G3, NOTE_SILENCE, NOTE_G3, NOTE_SILENCE, NOTE_G3, NOTE_SILENCE, NOTE_DS3, NOTE_SILENCE};
-double durations[] = {8, 8, 1, 8, 1, 8, 1, 24};
-int melodyLength = 8;
+#define R_OUT 6
+#define G_OUT 7 
+#define B_OUT 8
 
-void setup() {
-    buzzer.setMelody(notes, durations, melodyLength);
-    buzzer.turnSoundOn();
+#define PIN_BUTTON 4
+
+unsigned long last_time;
+unsigned long blick_time;
+
+Button start  = Button(PIN_BUTTON);
+
+
+void setup()
+{
+    pinMode(R_OUT, OUTPUT);
+    pinMode(G_OUT, OUTPUT);
+    pinMode(B_OUT, OUTPUT);
 }
 
-void loop() {
-  
-    buzzer.playSound();
-    if (buttonOff.wasPressed())
-    {
-        buzzer.turnSoundOff();
+void loop() 
+{
+    bool blick = false;
+    set_rgb_led(0, 255, 0);
+    if (start.wasPressed())
+    {   
+        last_time = millis();
+         while (1)
+        {
+          unsigned long interval = millis() - last_time;
+            if (interval < 30000)
+            {
+                set_rgb_led(255, 0, 0);
+                if (interval % 5000 == 0)
+                {
+                  blick = true;
+                  blick_time = millis();
+                }
+                else if (blick && (millis() - blick_time < 300)){
+                   set_rgb_led(255, 255, 255);
+                   
+                  }
+            }
+            else {
+                set_rgb_led(0, 0, 255);
+            }
+        };
+        return;
     }
+} 
+
+void set_rgb_led(int r, int g, int b)
+{
+      analogWrite(R_OUT, 255 - r);
+      analogWrite(G_OUT, 255 - g);
+      analogWrite(B_OUT, 255 - b);
 }
