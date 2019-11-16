@@ -44,4 +44,8 @@ private:
     int state;
     int debounceState;
     unsigned long debounceLastMs;
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> buzzer-and-buttons

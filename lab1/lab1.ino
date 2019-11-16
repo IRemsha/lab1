@@ -9,6 +9,7 @@
 #define PIN_BUTTON 4
 
 unsigned long last_time;
+unsigned long blick_time;
 
 Button start  = Button(PIN_BUTTON);
 
@@ -22,22 +23,28 @@ void setup()
 
 void loop() 
 {
+    bool blick = false;
     set_rgb_led(0, 255, 0);
     if (start.wasPressed())
     {   
         last_time = millis();
          while (1)
         {
-        	unsigned long interval = millis() - last_time;
+          unsigned long interval = millis() - last_time;
             if (interval < 30000)
             {
                 set_rgb_led(255, 0, 0);
                 if (interval % 5000 == 0)
                 {
-                  set_rgb_led(255, 255, 255);
-                  delay(1000);  
+                  blick = true;
+                  blick_time = millis();
                 }
-            }else {
+                else if (blick && (millis() - blick_time < 300)){
+                   set_rgb_led(255, 255, 255);
+                   
+                  }
+            }
+            else {
                 set_rgb_led(0, 0, 255);
             }
         };
